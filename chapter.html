@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEE Tutor</title>
+<link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+
+<nav id="sb">
+  <div class="sb-hd">
+    <div class="sb-logo">JEE<span>Tutor</span></div>
+    <button class="sb-tog" onclick="toggleSB()">☰</button>
+  </div>
+  <div class="sb-nav" id="sb-nav">
+    <!-- Built dynamically by engine.js based on CHAPTER data -->
+  </div>
+  <div class="sb-str">
+    <div class="sb-str-t">Concept Strength</div>
+    <div id="strMini"></div>
+  </div>
+</nav>
+
+<div id="main">
+  <div id="topbar">
+    <div class="tb-t" id="tbT">Loading...</div>
+    <div class="ptk"><div class="pf" id="pf"></div></div>
+    <div class="tb-p" id="tbP">0%</div>
+    <div id="auth-widget" style="position:relative;margin-left:8px;"></div>
+  </div>
+  <div id="content">
+    <!-- Panels built dynamically by engine.js buildPanels() -->
+  </div>
+</div>
+
+<!-- ── FLOATING AI CHAT ── -->
+<div id="ai-float-btn" onclick="toggleAIFloat()" title="Ask Arjun — AI Tutor">
+  <div class="ai-float-icon">✦</div>
+  <div class="ai-float-label">Ask Arjun</div>
+</div>
+<div id="ai-float-panel">
+  <div id="ai-float-header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="ai-badge-dot"></div>
+      <div style="font-weight:700;font-size:14px;color:var(--text);">Arjun — AI Tutor</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="ai-ctx-badge"></div>
+      <select id="ai-lang-sel" onchange="changeAILang(this.value)"
+        style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:11px;padding:3px 6px;cursor:pointer;">
+        <option value="hinglish">Hinglish</option>
+        <option value="hindi">Hindi</option>
+        <option value="english">English</option>
+      </select>
+      <button onclick="toggleAIFloat()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;">×</button>
+    </div>
+  </div>
+  <div id="ai-float-ctx-bar"></div>
+  <div id="ai-float-msgs"></div>
+  <div id="ai-float-input-wrap">
+    <textarea id="ai-float-inp" placeholder="Koi bhi doubt poocho..." rows="1"></textarea>
+    <button id="ai-float-send" onclick="floatSend()">Send</button>
+  </div>
+  <div style="padding:6px 14px 8px;font-size:10px;color:var(--hint);text-align:center;">
+    Arjun guides you — never gives direct answers 🙂
+  </div>
+</div>
+
+<!-- Supabase + Auth (always loaded before engine) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="../js/auth.js"></script>
+<!-- Shared engine -->
+<script src="../js/engine.js"></script>
+
+<!-- Chapter data file (set by each chapter's HTML or URL param) -->
+<!-- Loaded dynamically below -->
+<script>
+  // Determine which chapter to load from URL param: ?chapter=physics/newtons-laws
+  const params = new URLSearchParams(window.location.search);
+  const chapterId = params.get('chapter') || 'physics/newtons-laws';
+
+  const script = document.createElement('script');
+  script.src = '../chapters/' + chapterId + '.js';
+  script.onload = () => {
+    document.title = (CHAPTER ? CHAPTER.title + ' — ' : '') + 'JEE Tutor';
+    initPlatform();
+  };
+  script.onerror = () => {
+    document.getElementById('tbT').textContent = 'Chapter not found: ' + chapterId;
+  };
+  document.body.appendChild(script);
+</script>
+</body>
+</html>

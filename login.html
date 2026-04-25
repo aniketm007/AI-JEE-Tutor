@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — JEE Tutor</title>
+<style>
+:root{
+  --bg:#0b0d12;--surface:#13161e;--surface2:#1a1e2a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e2e5f0;--muted:#8a8fa8;--hint:#555b72;
+  --accent:#6c63ff;--accent2:#a78bfa;--green:#22c55e;--red:#ef4444;--teal:#14b8a6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(108,99,255,.15),transparent);pointer-events:none;}
+
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:400px;overflow:hidden;position:relative;}
+
+/* Header */
+.card-top{padding:28px 28px 0;text-align:center;}
+.logo{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px;}
+.logo span{color:var(--accent2);}
+.tagline{font-size:13px;color:var(--muted);margin-bottom:24px;}
+
+/* Tabs */
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface2);border-bottom:1px solid var(--border);}
+.tab{padding:12px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;border-bottom:2px solid transparent;}
+.tab.act{color:var(--accent2);border-bottom-color:var(--accent2);background:var(--surface);}
+.tab:hover:not(.act){color:var(--text);}
+
+/* Form */
+.form-body{padding:24px 28px;}
+.form-section{display:none;}
+.form-section.show{display:block;}
+.field{margin-bottom:16px;}
+label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+input[type=email],input[type=password],input[type=text]{
+  width:100%;padding:11px 13px;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:9px;
+  color:var(--text);font-size:14px;font-family:inherit;
+  outline:none;transition:border-color .15s;
+}
+input:focus{border-color:var(--accent2);}
+input::placeholder{color:var(--hint);}
+.btn-primary{width:100%;padding:12px;background:var(--accent);border:none;border-radius:9px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;margin-top:4px;}
+.btn-primary:hover{background:#7c6aff;transform:translateY(-1px);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-google{width:100%;padding:11px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:9px;margin-top:12px;}
+.btn-google:hover{border-color:var(--border2);background:var(--surface3);}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--hint);font-size:11px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Messages */
+.msg{padding:10px 13px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;}
+.msg.show{display:block;}
+.msg.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--red);}
+.msg.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:var(--green);}
+
+/* Footer */
+.card-footer{padding:14px 28px 20px;text-align:center;font-size:11px;color:var(--hint);border-top:1px solid var(--border);}
+.card-footer a{color:var(--accent2);text-decoration:none;}
+
+/* Loading spinner */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-top">
+    <div class="logo">JEE<span>Tutor</span></div>
+    <div class="tagline">Your JEE prep — any device, always in sync</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab act" id="tab-in" onclick="switchTab('in')">Sign In</div>
+    <div class="tab" id="tab-up" onclick="switchTab('up')">Create Account</div>
+  </div>
+
+  <div class="form-body">
+
+    <!-- SIGN IN -->
+    <div class="form-section show" id="sec-in">
+      <div class="msg" id="in-msg"></div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="in-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="in-pwd" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn-primary" id="in-btn" onclick="doSignIn()">Sign In</button>
+      <div class="divider">or</div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+
+    <!-- SIGN UP -->
+    <div class="form-section" id="sec-up">
+      <div class="msg" id="up-msg"></div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="up-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(min 8 characters)</span></label>
+        <input type="password" id="up-pwd" placeholder="Choose a strong password" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" id="up-pwd2" placeholder="Repeat password" autocomplete="new-password">
+      </div>
+      <button class="btn-primary" id="up-btn" onclick="doSignUp()">Create Account</button>
+      <div class="divider">or</div>
+      <button class="btn-google" onclick="doGoogle()">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+
+  </div>
+
+  <div class="card-footer">
+    By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.<br>
+    Progress is saved per account across all devices.
+  </div>
+</div>
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// Init auth on load
+authInit().then(() => {
+  // If already logged in, redirect to home
+  if (isLoggedIn()) {
+    const redir = new URLSearchParams(window.location.search).get('from') || 'index.html';
+    window.location.href = redir;
+  }
+});
+
+function switchTab(tab) {
+  document.getElementById('tab-in').classList.toggle('act', tab === 'in');
+  document.getElementById('tab-up').classList.toggle('act', tab === 'up');
+  document.getElementById('sec-in').classList.toggle('show', tab === 'in');
+  document.getElementById('sec-up').classList.toggle('show', tab === 'up');
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg show ' + type;
+}
+function clearMsg(id) {
+  const el = document.getElementById(id);
+  el.className = 'msg';
+}
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Please wait...' : btn.dataset.label;
+}
+
+// Store labels
+document.getElementById('in-btn').dataset.label = 'Sign In';
+document.getElementById('up-btn').dataset.label = 'Create Account';
+
+// Enter key
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const sec = document.getElementById('sec-in').classList.contains('show') ? 'in' : 'up';
+  if (sec === 'in') doSignIn();
+  else doSignUp();
+});
+
+async function doSignIn() {
+  const email = document.getElementById('in-email').value.trim();
+  const pwd   = document.getElementById('in-pwd').value;
+  clearMsg('in-msg');
+  if (!email || !pwd) { showMsg('in-msg', 'Please fill in all fields.', 'err'); return; }
+  setLoading('in-btn', true);
+  try {
+    await signIn(email, pwd);
+    showMsg('in-msg', 'Signed in! Redirecting...', 'ok');
+    const redir = new URLSearchParams(window.location.search).get('from') || 'index.html';
+    setTimeout(() => window.location.href = redir, 800);
+  } catch(err) {
+    showMsg('in-msg', err.message || 'Sign in failed. Check your email and password.', 'err');
+    setLoading('in-btn', false);
+  }
+}
+
+async function doSignUp() {
+  const email = document.getElementById('up-email').value.trim();
+  const pwd   = document.getElementById('up-pwd').value;
+  const pwd2  = document.getElementById('up-pwd2').value;
+  clearMsg('up-msg');
+  if (!email || !pwd || !pwd2) { showMsg('up-msg', 'Please fill in all fields.', 'err'); return; }
+  if (pwd.length < 8)           { showMsg('up-msg', 'Password must be at least 8 characters.', 'err'); return; }
+  if (pwd !== pwd2)             { showMsg('up-msg', 'Passwords do not match.', 'err'); return; }
+  setLoading('up-btn', true);
+  try {
+    await signUp(email, pwd);
+    showMsg('up-msg', 'Account created! Check your email to verify, then sign in.', 'ok');
+    setLoading('up-btn', false);
+    setTimeout(() => switchTab('in'), 2000);
+  } catch(err) {
+    showMsg('up-msg', err.message || 'Sign up failed.', 'err');
+    setLoading('up-btn', false);
+  }
+}
+
+async function doGoogle() {
+  try {
+    await signInWithGoogle();
+  } catch(err) {
+    showMsg('in-msg', err.message || 'Google sign-in failed.', 'err');
+    showMsg('up-msg', err.message || 'Google sign-in failed.', 'err');
+  }
+}
+</script>
+</body>
+</html>

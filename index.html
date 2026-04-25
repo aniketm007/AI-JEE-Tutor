@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEE Tutor — All Chapters</title>
+<style>
+:root{
+  --bg:#0b0d12;--surface:#13161e;--surface2:#1a1e2a;--surface3:#20253a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e2e5f0;--muted:#8a8fa8;--hint:#555b72;
+  --accent:#6c63ff;--accent2:#a78bfa;
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--pink:#ec4899;--teal:#14b8a6;
+  --sw:228px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;}
+/* SIDEBAR */
+#sb{width:var(--sw);flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;z-index:20;}
+.sb-hd{padding:16px 14px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sb-logo{font-weight:800;font-size:16px;letter-spacing:-.4px;color:var(--text);}
+.sb-logo span{color:var(--accent2);}
+.sb-byline{font-size:10px;color:var(--hint);margin-top:3px;}
+.sb-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.sb-sec{padding:10px 14px 3px;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--hint);text-transform:uppercase;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 14px;cursor:pointer;font-size:12px;color:var(--muted);transition:all .15s;border-left:2px solid transparent;}
+.sb-item:hover{background:rgba(108,99,255,.06);color:var(--text);}
+.sb-item.act{color:var(--accent2);border-left-color:var(--accent2);background:rgba(108,99,255,.08);}
+.sb-item-ic{font-size:14px;width:20px;text-align:center;flex-shrink:0;}
+.sb-item-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px;background:var(--surface2);color:var(--hint);}
+.sb-progress{margin:8px 12px 12px;padding:11px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;}
+.sb-progress-t{font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--hint);text-transform:uppercase;margin-bottom:8px;}
+.sbp{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.sbp-l{font-size:10px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sbp-bar{height:3px;background:var(--surface3);border-radius:99px;width:40px;flex-shrink:0;}
+.sbp-fill{height:3px;border-radius:99px;background:var(--teal);transition:width .4s;}
+/* MAIN */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+#topbar{padding:10px 22px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:6px 12px;flex:1;max-width:360px;}
+.search-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:13px;width:100%;font-family:inherit;}
+.search-wrap input::placeholder{color:var(--hint);}
+.top-stats{margin-left:auto;display:flex;gap:0;}
+.top-stat{text-align:center;padding:2px 16px;border-left:1px solid var(--border);}
+.top-stat-n{font-size:16px;font-weight:700;line-height:1.2;}
+.top-stat-l{font-size:10px;color:var(--hint);}
+#content{flex:1;overflow-y:auto;}
+/* HERO */
+.hero{padding:28px 28px 22px;background:linear-gradient(135deg,rgba(108,99,255,.07) 0%,rgba(20,184,166,.03) 50%,transparent 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;right:-60px;top:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(108,99,255,.08) 0%,transparent 70%);pointer-events:none;}
+.hero-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.hero-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);}
+.hero-dot{width:4px;height:4px;border-radius:50%;background:var(--accent2);}
+.hero-h{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.2;margin-bottom:10px;}
+.hero-h em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-p{font-size:13px;color:var(--muted);line-height:1.7;max-width:500px;margin-bottom:18px;}
+.hero-chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid;transition:all .15s;}
+.chip:hover{transform:translateY(-1px);}
+.chip-g{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.22);color:var(--green);}
+.chip-b{background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.22);color:var(--blue);}
+.chip-a{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.22);color:var(--amber);}
+.chip-p{background:rgba(108,99,255,.1);border-color:rgba(108,99,255,.28);color:var(--accent2);}
+/* SUBJECTS */
+.subj-section{padding:22px 28px;border-bottom:1px solid var(--border);}
+.subj-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.subj-icon-wrap{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.si-phy{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.18);}
+.si-math{background:rgba(108,99,255,.1);border:1px solid rgba(108,99,255,.18);}
+.si-chem{background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.18);}
+.subj-title-wrap .name{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+.subj-title-wrap .sub{font-size:11px;color:var(--hint);margin-top:1px;}
+.subj-count{margin-left:auto;font-size:11px;color:var(--hint);}
+.class-divider{display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--hint);padding:3px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:99px;margin-bottom:12px;}
+/* CHAPTER GRID */
+.ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-bottom:4px;}
+.ch-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:15px 15px 13px;cursor:pointer;transition:all .18s;text-decoration:none;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.ch-card-live::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:12px 12px 0 0;}
+.ch-card:hover:not(.ch-card-soon){border-color:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
+.ch-card-soon{opacity:.4;cursor:not-allowed;}
+.ch-tag{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:5px;}
+.ch-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;line-height:1.35;}
+.ch-desc{font-size:11px;color:var(--muted);line-height:1.55;flex:1;margin-bottom:11px;}
+.ch-foot{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.03em;}
+.badge-live{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.28);color:var(--green);}
+.badge-soon{background:var(--surface2);border:1px solid var(--border);color:var(--hint);}
+.badge-next{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.22);color:var(--amber);}
+.ch-stat{font-size:10px;color:var(--hint);}
+.ch-stat::before{content:'·';margin-right:4px;}
+.ch-pbar{height:2px;background:var(--surface3);border-radius:99px;margin-top:10px;}
+.ch-pbar-f{height:2px;border-radius:99px;background:linear-gradient(90deg,var(--teal),var(--green));transition:width .5s;}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<nav id="sb">
+  <div class="sb-hd">
+    <div class="sb-logo">JEE<span>Tutor</span></div>
+    <div class="sb-byline">Class 11 + 12 &middot; Mains + Advanced</div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-sec">Browse</div>
+    <div class="sb-item act" onclick="filterSub('all',this)">
+      <span class="sb-item-ic">📚</span> All Chapters <span class="sb-item-badge">35</span>
+    </div>
+    <div class="sb-item" onclick="filterSub('physics',this)">
+      <span class="sb-item-ic">⚛️</span> Physics <span class="sb-item-badge">23</span>
+    </div>
+    <div class="sb-item" onclick="filterSub('maths',this)">
+      <span class="sb-item-ic">📐</span> Mathematics <span class="sb-item-badge">11 live</span>
+    </div>
+    <div class="sb-item" onclick="filterSub('chemistry',this)">
+      <span class="sb-item-ic">🧪</span> Chemistry <span class="sb-item-badge">16</span>
+    </div>
+    <div class="sb-sec" style="margin-top:6px;">Account</div>
+    <div class="sb-item" style="opacity:.45;cursor:default;">
+      <span class="sb-item-ic">🔐</span> Login to sync progress
+    </div>
+  </div>
+  <div class="sb-progress">
+    <div class="sb-progress-t">My Progress</div>
+    <div class="sbp">
+      <span class="sbp-l">Newton&apos;s Laws</span>
+      <div class="sbp-bar"><div class="sbp-fill" id="sbpn" style="width:0%"></div></div>
+    </div>
+    <div class="sbp">
+      <span class="sbp-l">Sets</span>
+      <div class="sbp-bar"><div class="sbp-fill" id="sbps" style="width:0%"></div></div>
+    </div>
+  </div>
+</nav>
+
+<div id="main">
+  <div id="topbar">
+    <div class="search-wrap">
+      <span style="color:var(--hint);font-size:13px;">🔍</span>
+      <input type="text" placeholder="Search chapters, topics..." oninput="doSearch(this.value)">
+    </div>
+    <div class="top-stats">
+      <div class="top-stat">
+        <div class="top-stat-n" style="color:var(--teal)">12</div>
+        <div class="top-stat-l">Available</div>
+      </div>
+      <div class="top-stat">
+        <div class="top-stat-n" style="color:var(--amber)">35</div>
+        <div class="top-stat-l">Total</div>
+      </div>
+      <div class="top-stat">
+        <div class="top-stat-n" style="color:var(--accent2)">✦</div>
+        <div class="top-stat-l">AI Tutor</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="content">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">
+        <span class="hero-tag">JEE 2025 &middot; 2026</span>
+        <span class="hero-dot"></span>
+        <span style="font-size:10px;color:var(--hint)">Socratic Method &middot; AI Tutor Arjun</span>
+      </div>
+      <div class="hero-h">Master JEE through<br><em>questions, not textbooks</em></div>
+      <div class="hero-p">Every chapter taught by discovering concepts yourself — guided by Arjun, your AI tutor who speaks Hinglish, Hindi or English. No more passive reading.</div>
+      <div class="hero-chips">
+        <span class="chip chip-g">✓ 12 chapters live now</span>
+        <span class="chip chip-b">23 chapters coming</span>
+        <span class="chip chip-a">CBSE &rarr; Mains &rarr; Advanced</span>
+        <span class="chip chip-p">✦ Ask Arjun anything</span>
+      </div>
+    </div>
+
+    <!-- PHYSICS -->
+    <div class="subj-section" id="sec-physics">
+      <div class="subj-head">
+        <div class="subj-icon-wrap si-phy">⚛️</div>
+        <div class="subj-title-wrap">
+          <div class="name">Physics</div>
+          <div class="sub">Mechanics &middot; Electrostatics &middot; Optics &middot; Modern Physics</div>
+        </div>
+        <div class="subj-count">23 chapters &middot; Class 11 &amp; 12</div>
+      </div>
+      <div class="class-divider">📘 Class 11</div>
+      <div class="ch-grid">
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=physics/newtons-laws">
+          <div class="ch-tag">Ch 4 &middot; Mechanics</div>
+          <div class="ch-title">Newton's Laws of Motion</div>
+          <div class="ch-desc">F=ma, inertia, action-reaction. The foundation of all JEE mechanics problems.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">4 concepts</span>
+            <span class="ch-stat">41 questions</span>
+          </div>
+          <div class="ch-pbar"><div class="ch-pbar-f" id="cpn" style="width:0%"></div></div>
+        </a>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 1 &middot; Measurement</div>
+          <div class="ch-title">Units &amp; Dimensions</div>
+          <div class="ch-desc">Dimensional analysis, SI units, significant figures, error analysis.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 2 &middot; Kinematics</div>
+          <div class="ch-title">Motion in a Straight Line</div>
+          <div class="ch-desc">SUVAT equations, velocity-time graphs, uniformly accelerated motion.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 3 &middot; Kinematics</div>
+          <div class="ch-title">Motion in a Plane</div>
+          <div class="ch-desc">Projectile motion, circular motion, relative velocity vectors.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 5 &middot; Mechanics</div>
+          <div class="ch-title">Work, Energy &amp; Power</div>
+          <div class="ch-desc">Work-energy theorem, conservative forces, elastic &amp; inelastic collisions.</div>
+          <div class="ch-foot"><span class="badge badge-next">Up next</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 6 &middot; Rotational Motion</div>
+          <div class="ch-title">System of Particles &amp; Rotation</div>
+          <div class="ch-desc">Centre of mass, moment of inertia, torque, angular momentum.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 7 &middot; Gravitation</div>
+          <div class="ch-title">Gravitation</div>
+          <div class="ch-desc">Universal gravitation, orbital velocity, escape velocity, Kepler's laws.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 14 &middot; Oscillations</div>
+          <div class="ch-title">Oscillations &amp; Waves</div>
+          <div class="ch-desc">SHM, damped oscillations, resonance, sound waves, Doppler effect.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATHS -->
+    <div class="subj-section" id="sec-maths">
+      <div class="subj-head">
+        <div class="subj-icon-wrap si-math">📐</div>
+        <div class="subj-title-wrap">
+          <div class="name">Mathematics</div>
+          <div class="sub">Algebra &middot; Calculus &middot; Coordinate Geometry &middot; Trigonometry</div>
+        </div>
+        <div class="subj-count">16 chapters &middot; Class 11 &amp; 12</div>
+      </div>
+      <div class="class-divider">📘 Class 11</div>
+      <div class="ch-grid">
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/sets">
+          <div class="ch-tag">Ch 1 &middot; Foundation</div>
+          <div class="ch-title">Sets</div>
+          <div class="ch-desc">Foundation of all JEE Maths. Union, intersection, De Morgan's Laws, power sets.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">6 concepts</span>
+            <span class="ch-stat">30+ questions</span>
+          </div>
+          <div class="ch-pbar"><div class="ch-pbar-f" id="cps" style="width:0%"></div></div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/relations-functions">
+          <div class="ch-tag">Ch 2 &middot; Algebra</div>
+          <div class="ch-title">Relations &amp; Functions</div>
+          <div class="ch-desc">Arrow diagrams to bijections. Domain, range, composition and inverse functions.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/complex-numbers-quadratic">
+          <div class="ch-tag">Ch 3 &middot; Algebra</div>
+          <div class="ch-title">Complex Numbers &amp; Quadratics</div>
+          <div class="ch-desc">i=√(−1), Argand plane, De Moivre's theorem. Vieta's formulas, nature of roots.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/linear-inequalities">
+          <div class="ch-tag">Ch 4 &middot; Algebra</div>
+          <div class="ch-title">Linear Inequalities</div>
+          <div class="ch-desc">Number line to 2D regions. Modulus and quadratic inequalities. Wavy curve method.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/permutations-combinations">
+          <div class="ch-tag">Ch 5 &middot; Combinatorics</div>
+          <div class="ch-title">Permutations &amp; Combinations</div>
+          <div class="ch-desc">Multiplication principle, P(n,r), C(n,r). Circular arrangements, Stars and Bars.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/binomial-theorem">
+          <div class="ch-tag">Ch 6 &middot; Algebra</div>
+          <div class="ch-title">Binomial Theorem</div>
+          <div class="ch-desc">General term T_{r+1}, term independent of x, coefficient identities. Pascal's triangle.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/sequences-series">
+          <div class="ch-tag">Ch 7 &middot; Algebra</div>
+          <div class="ch-title">Sequences &amp; Series</div>
+          <div class="ch-desc">AP, GP, HP. Σk, Σk², Σk³ formulas. AM≥GM≥HM and G²=AH.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/trigonometry">
+          <div class="ch-tag">Ch 8 &middot; Trigonometry</div>
+          <div class="ch-title">Trigonometric Functions</div>
+          <div class="ch-desc">Unit circle, ASTC, exact values. Compound, double, half-angle identities. General solutions.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/straight-lines">
+          <div class="ch-tag">Ch 9 &middot; Coordinate Geometry</div>
+          <div class="ch-title">Straight Lines</div>
+          <div class="ch-desc">5 forms of line equations. Distance, angle between lines, concurrency, locus problems.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/limits-derivatives">
+          <div class="ch-tag">Ch 10 &middot; Calculus</div>
+          <div class="ch-title">Limits &amp; Derivatives</div>
+          <div class="ch-desc">Standard limits, continuity, discontinuity types. Power, product, quotient and chain rules.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+        <a class="ch-card ch-card-live" href="chapter.html?chapter=maths/statistics-probability">
+          <div class="ch-tag">Ch 11 &middot; Statistics</div>
+          <div class="ch-title">Statistics &amp; Probability</div>
+          <div class="ch-desc">Mean, variance, SD. Addition rule, independence, conditional probability, Bayes' theorem.</div>
+          <div class="ch-foot">
+            <span class="badge badge-live">✓ Available</span>
+            <span class="ch-stat">3 concepts</span>
+            <span class="ch-stat">30 questions</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- CHEMISTRY -->
+    <div class="subj-section" id="sec-chemistry">
+      <div class="subj-head">
+        <div class="subj-icon-wrap si-chem">🧪</div>
+        <div class="subj-title-wrap">
+          <div class="name">Chemistry</div>
+          <div class="sub">Physical &middot; Organic &middot; Inorganic Chemistry</div>
+        </div>
+        <div class="subj-count">16 chapters &middot; Class 11 &amp; 12</div>
+      </div>
+      <div class="class-divider">📘 Class 11</div>
+      <div class="ch-grid">
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 1 &middot; Physical</div>
+          <div class="ch-title">Some Basic Concepts of Chemistry</div>
+          <div class="ch-desc">Mole concept, stoichiometry, limiting reagent, percentage composition.</div>
+          <div class="ch-foot"><span class="badge badge-next">Up next</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 2 &middot; Physical</div>
+          <div class="ch-title">Structure of Atom</div>
+          <div class="ch-desc">Bohr model, quantum numbers, orbitals, electronic configuration.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 4 &middot; Physical</div>
+          <div class="ch-title">Chemical Bonding &amp; Molecular Structure</div>
+          <div class="ch-desc">Ionic and covalent bonds, VSEPR theory, molecular orbital theory.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+        <div class="ch-card ch-card-soon">
+          <div class="ch-tag">Ch 6 &middot; Physical</div>
+          <div class="ch-title">Thermodynamics</div>
+          <div class="ch-desc">Enthalpy, entropy, Gibbs energy, spontaneity, Hess's law.</div>
+          <div class="ch-foot"><span class="badge badge-soon">Coming soon</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:18px 28px;text-align:center;font-size:11px;color:var(--hint);">
+      More chapters added weekly &middot; Built for JEE 2025&ndash;26 &middot; <span style="color:var(--accent2)">Open source on GitHub</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// Progress bars from localStorage
+try {
+  const n = JSON.parse(localStorage.getItem('jt_phy-newtons-laws')||'null');
+  if(n){const p=Math.min(100,Math.round(Object.keys(n.qbProg||{}).length/41*100));document.getElementById('cpn').style.width=p+'%';document.getElementById('sbpn').style.width=p+'%';}
+  const s = JSON.parse(localStorage.getItem('jt_maths-sets')||'null');
+  if(s){const p=Math.min(100,Math.round(Object.keys(s.qbProg||{}).length/30*100));document.getElementById('cps').style.width=p+'%';document.getElementById('sbps').style.width=p+'%';}
+} catch(e){}
+
+function filterSub(subj, btn){
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  ['physics','maths','chemistry'].forEach(s=>{
+    const el=document.getElementById('sec-'+s);
+    if(el) el.style.display=(subj==='all'||subj===s)?'':'none';
+  });
+  if(subj==='all') document.getElementById('content').scrollTop=0;
+}
+
+function doSearch(q){
+  const t=q.toLowerCase().trim();
+  document.querySelectorAll('.ch-card').forEach(c=>{
+    c.style.display=(!t||c.textContent.toLowerCase().includes(t))?'':'none';
+  });
+}
+</script>
+</body>
+</html>

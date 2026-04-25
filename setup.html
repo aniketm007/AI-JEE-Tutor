@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Setup — JEE Tutor</title>
+<style>
+:root{
+  --bg:#0b0d12;--surface:#13161e;--surface2:#1a1e2a;--surface3:#20253a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e2e5f0;--muted:#8a8fa8;--hint:#555b72;
+  --accent:#6c63ff;--accent2:#a78bfa;
+  --green:#22c55e;--red:#ef4444;--amber:#f59e0b;--teal:#14b8a6;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:32px 20px;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(108,99,255,.12),transparent);pointer-events:none;}
+
+.page{width:100%;max-width:560px;position:relative;z-index:1;}
+.logo{font-size:20px;font-weight:800;letter-spacing:-.3px;margin-bottom:28px;}
+.logo span{color:var(--accent2);}
+
+/* Progress steps */
+.steps{display:flex;gap:0;margin-bottom:32px;}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;width:100%;height:1px;background:var(--border2);}
+.step-dot{width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--hint);position:relative;z-index:1;transition:all .3s;}
+.step-dot.done{background:var(--green);border-color:var(--green);color:#000;}
+.step-dot.act{background:var(--accent);border-color:var(--accent);color:#fff;}
+.step-lbl{font-size:10px;color:var(--hint);margin-top:5px;text-align:center;white-space:nowrap;}
+.step-lbl.act{color:var(--accent2);}
+.step-lbl.done{color:var(--green);}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:24px;margin-bottom:14px;transition:all .2s;}
+.card.done{border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.03);}
+.card.active{border-color:rgba(108,99,255,.3);}
+.card-num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-num.done{background:var(--green);}
+.card-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.card-title{font-size:15px;font-weight:700;}
+.card-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+
+/* Screenshot hint */
+.hint-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;font-size:12px;color:var(--muted);line-height:1.7;}
+.hint-box strong{color:var(--text);}
+.hint-step{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start;}
+.hint-step:last-child{margin-bottom:0;}
+.hint-n{width:18px;height:18px;border-radius:50%;background:rgba(108,99,255,.2);color:var(--accent2);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.hint-arrow{color:var(--accent2);font-weight:700;margin:0 3px;}
+
+/* Input fields */
+.field{margin-bottom:14px;}
+label{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.input-wrap{position:relative;}
+input[type=text],input[type=password]{
+  width:100%;padding:11px 40px 11px 13px;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:9px;color:var(--text);font-size:13px;
+  font-family:monospace;outline:none;transition:border-color .15s;
+}
+input:focus{border-color:var(--accent2);}
+input.valid{border-color:rgba(34,197,94,.5);}
+input.invalid{border-color:rgba(239,68,68,.4);}
+.input-status{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;}
+
+/* Buttons */
+.btn{padding:11px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--accent);color:#fff;width:100%;}
+.btn-primary:hover{background:#7c6aff;}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;}
+.btn-secondary{background:var(--surface2);border:1px solid var(--border2);color:var(--muted);}
+.btn-secondary:hover{color:var(--text);}
+
+/* Status messages */
+.status{padding:10px 13px;border-radius:8px;font-size:13px;margin-top:10px;display:none;}
+.status.show{display:block;}
+.status.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:var(--green);}
+.status.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--red);}
+.status.info{background:rgba(108,99,255,.08);border:1px solid rgba(108,99,255,.25);color:var(--accent2);}
+
+/* Code block */
+.code-block{background:var(--surface3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:monospace;font-size:12px;color:var(--teal);line-height:1.7;margin:10px 0;position:relative;word-break:break-all;}
+.copy-btn{position:absolute;top:8px;right:8px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;}
+.copy-btn:hover{color:var(--text);}
+
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-radius:50%;border-top-color:#fff;animation:spin .6s linear infinite;vertical-align:middle;margin-right:4px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.all-done{text-align:center;padding:28px 20px;display:none;}
+.all-done.show{display:block;}
+.done-icon{font-size:48px;margin-bottom:12px;}
+.done-title{font-size:20px;font-weight:800;margin-bottom:8px;}
+.done-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="logo">JEE<span>Tutor</span> — Setup</div>
+
+  <!-- Steps indicator -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-dot act" id="sd1">1</div>
+      <div class="step-lbl act" id="sl1">Supabase</div>
+    </div>
+    <div class="step">
+      <div class="step-dot" id="sd2">2</div>
+      <div class="step-lbl" id="sl2">Keys</div>
+    </div>
+    <div class="step">
+      <div class="step-dot" id="sd3">3</div>
+      <div class="step-lbl" id="sl3">SQL</div>
+    </div>
+    <div class="step">
+      <div class="step-dot" id="sd4">4</div>
+      <div class="step-lbl" id="sl4">Deploy</div>
+    </div>
+    <div class="step">
+      <div class="step-dot" id="sd5">5</div>
+      <div class="step-lbl" id="sl5">Live!</div>
+    </div>
+  </div>
+
+  <!-- Already configured? -->
+  <div id="already-configured" style="display:none;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.22);border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--green);">
+    ✓ Supabase is already configured. You can update the keys below if needed.
+    <button onclick="goToApp()" style="margin-left:10px;padding:4px 12px;background:var(--green);border:none;border-radius:6px;color:#000;font-size:11px;font-weight:700;cursor:pointer;">Go to App →</button>
+  </div>
+
+  <!-- STEP 1: Create Supabase project -->
+  <div class="card active" id="card1">
+    <div class="card-hd">
+      <div class="card-num" id="num1">1</div>
+      <div>
+        <div class="card-title">Create a free Supabase project</div>
+        <div class="card-sub">Takes 2 minutes — completely free, no credit card needed</div>
+      </div>
+    </div>
+    <div class="hint-box">
+      <div class="hint-step"><div class="hint-n">1</div><div>Go to <strong><a href="https://supabase.com" target="_blank" style="color:var(--teal)">supabase.com</a></strong> and click <strong>Start your project</strong></div></div>
+      <div class="hint-step"><div class="hint-n">2</div><div>Sign in with GitHub (easiest) or create an account</div></div>
+      <div class="hint-step"><div class="hint-n">3</div><div>Click <strong>New project</strong> → name it <strong>jee-tutor</strong> → choose any region → set a database password → click <strong>Create new project</strong></div></div>
+      <div class="hint-step"><div class="hint-n">4</div><div>Wait ~1 minute for it to start up, then come back here</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="doneStep1()">I created the project →</button>
+  </div>
+
+  <!-- STEP 2: Paste keys -->
+  <div class="card" id="card2" style="opacity:.4;pointer-events:none;">
+    <div class="card-hd">
+      <div class="card-num" id="num2">2</div>
+      <div>
+        <div class="card-title">Copy your project keys</div>
+        <div class="card-sub">These connect JEE Tutor to your Supabase database</div>
+      </div>
+    </div>
+    <div class="hint-box">
+      <div class="hint-step"><div class="hint-n">1</div><div>In Supabase, click the <strong>Settings</strong> icon (bottom of left sidebar)</div></div>
+      <div class="hint-step"><div class="hint-n">2</div><div>Click <strong>API</strong> in the settings menu</div></div>
+      <div class="hint-step"><div class="hint-n">3</div><div>You will see <strong>Project URL</strong> and <strong>Project API keys</strong> — copy both values below</div></div>
+    </div>
+    <div class="field">
+      <label>Project URL <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(looks like: https://abcdefgh.supabase.co)</span></label>
+      <div class="input-wrap">
+        <input type="text" id="sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" oninput="validateUrl(this)">
+        <span class="input-status" id="url-status"></span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Anon / Public key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)">(the one labelled "anon public" — starts with eyJ)</span></label>
+      <div class="input-wrap">
+        <input type="text" id="sb-anon" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." oninput="validateAnon(this)">
+        <span class="input-status" id="anon-status"></span>
+      </div>
+    </div>
+    <div class="status" id="keys-status"></div>
+    <button class="btn btn-primary" id="keys-btn" onclick="saveKeys()" disabled>Test & Save Keys →</button>
+  </div>
+
+  <!-- STEP 3: Run SQL -->
+  <div class="card" id="card3" style="opacity:.4;pointer-events:none;">
+    <div class="card-hd">
+      <div class="card-num" id="num3">3</div>
+      <div>
+        <div class="card-title">Create the database tables</div>
+        <div class="card-sub">One SQL script creates everything needed — runs in 5 seconds</div>
+      </div>
+    </div>
+    <div class="hint-box">
+      <div class="hint-step"><div class="hint-n">1</div><div>In Supabase, click <strong>SQL Editor</strong> in the left sidebar</div></div>
+      <div class="hint-step"><div class="hint-n">2</div><div>Click <strong>New query</strong></div></div>
+      <div class="hint-step"><div class="hint-n">3</div><div>Copy the SQL below and paste it into the editor, then click <strong>Run</strong></div></div>
+    </div>
+    <div class="code-block" id="sql-block">Loading SQL...</div>
+    <button class="btn btn-secondary" onclick="copySql()" style="width:100%;margin-bottom:12px;">📋 Copy SQL to clipboard</button>
+    <div class="status" id="sql-status"></div>
+    <button class="btn btn-primary" onclick="verifySql()">I ran the SQL →</button>
+  </div>
+
+  <!-- STEP 4: Deploy to Vercel -->
+  <div class="card" id="card4" style="opacity:.4;pointer-events:none;">
+    <div class="card-hd">
+      <div class="card-num" id="num4">4</div>
+      <div>
+        <div class="card-title">Deploy to Vercel (free)</div>
+        <div class="card-sub">Get a public URL like jee-tutor.vercel.app — takes 2 minutes</div>
+      </div>
+    </div>
+    <div class="hint-box">
+      <div class="hint-step"><div class="hint-n">1</div><div>Go to <strong><a href="https://vercel.com" target="_blank" style="color:var(--teal)">vercel.com</a></strong> → Sign up free (use GitHub)</div></div>
+      <div class="hint-step"><div class="hint-n">2</div><div>Click <strong>Add New → Project</strong> → then <strong>Upload</strong> (not Git import)</div></div>
+      <div class="hint-step"><div class="hint-n">3</div><div>Drag and drop your entire <strong>jee-platform</strong> folder into the upload area</div></div>
+      <div class="hint-step"><div class="hint-n">4</div><div>Before clicking Deploy, go to <strong>Environment Variables</strong> and add:<br>
+        <div class="code-block" style="margin-top:6px;font-size:11px;">
+          Name: <strong style="color:var(--amber)">ANTHROPIC_API_KEY</strong><br>
+          Value: <strong style="color:var(--teal)">sk-ant-your-key-here</strong>
+        </div>
+      </div></div>
+      <div class="hint-step"><div class="hint-n">5</div><div>Click <strong>Deploy</strong> — Vercel gives you a URL like <strong>jee-tutor-xyz.vercel.app</strong></div></div>
+      <div class="hint-step"><div class="hint-n">6</div><div>Open that URL → go to <strong>/setup</strong> → paste your Supabase keys again (browser on the deployed site needs them too)</div></div>
+    </div>
+    <div class="status" id="deploy-status"></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1" onclick="verifyDeploy()">I deployed — check it</button>
+      <button class="btn btn-secondary" onclick="skipDeploy()">Run locally for now</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="all-done" id="all-done">
+    <div class="done-icon">🎉</div>
+    <div class="done-title">Setup complete!</div>
+    <div class="done-sub" id="done-sub-text">JEE Tutor is connected to Supabase and live on the internet.<br>Share the URL with students!</div>
+    <button class="btn btn-primary" style="max-width:220px;margin:0 auto;" onclick="goToApp()">Open JEE Tutor →</button>
+    <div style="margin-top:16px;font-size:11px;color:var(--hint);">
+      To deploy publicly, run <code style="background:var(--surface2);padding:2px 7px;border-radius:4px;">vercel</code> in this folder
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+
+// ── SQL to display ────────────────────────────────────────────
+const SQL = `-- JEE Tutor — Supabase Schema
+-- Paste this entire block and click Run
+
+create table if not exists chapter_progress (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  chapter_id  text not null,
+  state       jsonb not null default '{}',
+  updated_at  timestamptz not null default now(),
+  unique (user_id, chapter_id)
+);
+create index if not exists idx_cp_user on chapter_progress (user_id);
+
+create or replace function update_updated_at()
+returns trigger language plpgsql as $$
+begin new.updated_at = now(); return new; end; $$;
+
+drop trigger if exists trg_cp_updated on chapter_progress;
+create trigger trg_cp_updated
+  before update on chapter_progress
+  for each row execute function update_updated_at();
+
+alter table chapter_progress enable row level security;
+
+create policy "own_select" on chapter_progress for select using (auth.uid() = user_id);
+create policy "own_insert" on chapter_progress for insert with check (auth.uid() = user_id);
+create policy "own_update" on chapter_progress for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "own_delete" on chapter_progress for delete using (auth.uid() = user_id);
+
+create table if not exists profiles (
+  id           uuid primary key references auth.users(id) on delete cascade,
+  display_name text,
+  target_year  int,
+  created_at   timestamptz default now()
+);
+alter table profiles enable row level security;
+create policy "own_profile_select" on profiles for select using (auth.uid() = id);
+create policy "own_profile_insert" on profiles for insert with check (auth.uid() = id);
+create policy "own_profile_update" on profiles for update using (auth.uid() = id);
+
+create or replace function handle_new_user()
+returns trigger language plpgsql security definer as $$
+begin insert into profiles (id) values (new.id) on conflict do nothing; return new; end; $$;
+
+drop trigger if exists trg_new_user on auth.users;
+create trigger trg_new_user
+  after insert on auth.users
+  for each row execute function handle_new_user();`;
+
+document.getElementById('sql-block').textContent = SQL;
+
+// ── Check if already configured ──────────────────────────────
+window.addEventListener('load', () => {
+  const url  = localStorage.getItem('jt_sb_url');
+  const anon = localStorage.getItem('jt_sb_anon');
+  if (url && anon) {
+    document.getElementById('already-configured').style.display = 'block';
+    document.getElementById('sb-url').value  = url;
+    document.getElementById('sb-anon').value = anon;
+    validateUrl(document.getElementById('sb-url'));
+    validateAnon(document.getElementById('sb-anon'));
+  }
+});
+
+// ── Step 1 ────────────────────────────────────────────────────
+function doneStep1() {
+  markStepDone(1);
+  unlockStep(2);
+}
+
+// ── Step 2 — Key validation ───────────────────────────────────
+function validateUrl(inp) {
+  const v = inp.value.trim();
+  const ok = v.startsWith('https://') && v.includes('.supabase.co');
+  inp.className = v.length > 10 ? (ok ? 'valid' : 'invalid') : '';
+  document.getElementById('url-status').textContent = v.length > 10 ? (ok ? '✓' : '✗') : '';
+  checkKeysReady();
+}
+
+function validateAnon(inp) {
+  const v = inp.value.trim();
+  const ok = v.startsWith('eyJ') && v.length > 100;
+  inp.className = v.length > 20 ? (ok ? 'valid' : 'invalid') : '';
+  document.getElementById('anon-status').textContent = v.length > 20 ? (ok ? '✓' : '✗') : '';
+  checkKeysReady();
+}
+
+function checkKeysReady() {
+  const urlOk  = document.getElementById('sb-url').className  === 'valid';
+  const anonOk = document.getElementById('sb-anon').className === 'valid';
+  document.getElementById('keys-btn').disabled = !(urlOk && anonOk);
+}
+
+async function saveKeys() {
+  const url  = document.getElementById('sb-url').value.trim();
+  const anon = document.getElementById('sb-anon').value.trim();
+  const btn  = document.getElementById('keys-btn');
+  const status = document.getElementById('keys-status');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Testing connection...';
+  status.className = 'status info show';
+  status.textContent = 'Connecting to Supabase...';
+
+  try {
+    // Test the connection by calling the Supabase health endpoint
+    const resp = await fetch(url + '/rest/v1/', {
+      headers: { 'apikey': anon, 'Authorization': 'Bearer ' + anon }
+    });
+
+    if (!resp.ok && resp.status !== 406) {
+      // 406 is expected (no table specified) — means connection works
+      throw new Error('Connection failed (status ' + resp.status + '). Check your URL and key.');
+    }
+
+    // Save to localStorage
+    localStorage.setItem('jt_sb_url',  url);
+    localStorage.setItem('jt_sb_anon', anon);
+
+    status.className = 'status ok show';
+    status.textContent = '✓ Connection successful! Keys saved.';
+    btn.innerHTML = '✓ Keys saved';
+
+    markStepDone(2);
+    unlockStep(3);
+
+  } catch(err) {
+    status.className = 'status err show';
+    status.textContent = '✗ ' + (err.message || 'Could not connect. Double-check the URL and key.');
+    btn.disabled = false;
+    btn.innerHTML = 'Test & Save Keys →';
+  }
+}
+
+// ── Step 3 — SQL copy & verify ────────────────────────────────
+function copySql() {
+  navigator.clipboard.writeText(SQL).then(() => {
+    const btn = event.target;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy SQL to clipboard', 2000);
+  }).catch(() => {
+    // Fallback — select all text in the block
+    const block = document.getElementById('sql-block');
+    const range = document.createRange();
+    range.selectNode(block);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+}
+
+async function verifySql() {
+  const url  = localStorage.getItem('jt_sb_url');
+  const anon = localStorage.getItem('jt_sb_anon');
+  const status = document.getElementById('sql-status');
+
+  status.className = 'status info show';
+  status.textContent = 'Checking if tables exist...';
+
+  try {
+    // Check if chapter_progress table exists by querying it
+    const resp = await fetch(url + '/rest/v1/chapter_progress?limit=1', {
+      headers: {
+        'apikey': anon,
+        'Authorization': 'Bearer ' + anon
+      }
+    });
+
+    if (resp.status === 200 || resp.status === 406) {
+      // Table exists
+      status.className = 'status ok show';
+      status.textContent = '✓ Tables found! Database is ready.';
+      markStepDone(3);
+      unlockStep(4);
+    } else if (resp.status === 404) {
+      status.className = 'status err show';
+      status.textContent = '✗ Tables not found — did you run the SQL? Make sure you clicked Run in the SQL Editor.';
+    } else {
+      const body = await resp.json().catch(() => ({}));
+      throw new Error(body.message || 'Status ' + resp.status);
+    }
+  } catch(err) {
+    status.className = 'status err show';
+    status.textContent = '✗ Could not verify: ' + err.message;
+  }
+}
+
+// ── Step helpers ──────────────────────────────────────────────
+function markStepDone(n) {
+  const dot = document.getElementById('sd' + n);
+  const lbl = document.getElementById('sl' + n);
+  const num = document.getElementById('num' + n);
+  dot.className = 'step-dot done';
+  dot.textContent = '✓';
+  lbl.className = 'step-lbl done';
+  if (num) { num.className = 'card-num done'; num.textContent = '✓'; }
+  const card = document.getElementById('card' + n);
+  if (card) card.className = 'card done';
+}
+
+function unlockStep(n) {
+  const card = document.getElementById('card' + n);
+  const dot  = document.getElementById('sd' + n);
+  const lbl  = document.getElementById('sl' + n);
+  if (card) { card.style.opacity = '1'; card.style.pointerEvents = ''; card.className = 'card active'; }
+  if (dot)  dot.className = 'step-dot act';
+  if (lbl)  lbl.className = 'step-lbl act';
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function goToApp() { window.location.href = 'index.html'; }
+
+async function verifyDeploy() {
+  const status = document.getElementById('deploy-status');
+  const input = prompt('Paste your Vercel URL (e.g. https://jee-tutor-xyz.vercel.app):');
+  if (!input) return;
+  const url = input.trim().replace(/\/$/, '');
+  status.className = 'status info show';
+  status.textContent = 'Checking ' + url + '...';
+  try {
+    const resp = await fetch(url, { mode: 'no-cors' });
+    // no-cors means we can't read response but no error = site is up
+    localStorage.setItem('jt_vercel_url', url);
+    status.className = 'status ok show';
+    status.textContent = '✓ Site is live at ' + url;
+    document.getElementById('done-sub-text').innerHTML =
+      'JEE Tutor is live at <a href="' + url + '" target="_blank" style="color:var(--teal)">' + url + '</a><br>Share this URL with students!';
+    markStepDone(4);
+    markStepDone(5);
+    setTimeout(() => {
+      document.getElementById('all-done').classList.add('show');
+      document.getElementById('all-done').scrollIntoView({ behavior: 'smooth' });
+    }, 500);
+  } catch(e) {
+    status.className = 'status err show';
+    status.textContent = 'Could not reach ' + url + '. Make sure deploy finished.';
+  }
+}
+
+function skipDeploy() {
+  document.getElementById('deploy-status').className = 'status info show';
+  document.getElementById('deploy-status').textContent = 'Running locally at http://localhost:8080. Deploy anytime later.';
+  document.getElementById('done-sub-text').innerHTML =
+    'JEE Tutor is connected to Supabase.<br>Run locally: <code style="background:var(--surface3);padding:2px 7px;border-radius:4px">python -m http.server 8080</code>';
+  markStepDone(4);
+  markStepDone(5);
+  setTimeout(() => {
+    document.getElementById('all-done').classList.add('show');
+    document.getElementById('all-done').scrollIntoView({ behavior: 'smooth' });
+  }, 400);
+}
+
+// If already on step 1 done (keys exist), skip to step 2
+if (localStorage.getItem('jt_sb_url') && localStorage.getItem('jt_sb_anon')) {
+  markStepDone(1);
+  unlockStep(2);
+}
+</script>
+</body>
+</html>

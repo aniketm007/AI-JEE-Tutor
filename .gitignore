@@ -1,0 +1,15 @@
+# Never commit secrets
+.env
+.env.local
+.env*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node (proxy.js dependencies if any)
+node_modules/
+
+# Editor
+.vscode/
+*.swp

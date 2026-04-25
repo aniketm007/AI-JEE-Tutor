@@ -4,8 +4,10 @@
 // from https://supabase.com → Project Settings → API
 // ═══════════════════════════════════════════════════════════
 
-const SUPABASE_URL  = 'YOUR_SUPABASE_URL';      // e.g. https://abcdefgh.supabase.co
-const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY'; // starts with eyJ...
+// Keys are stored in localStorage by setup.html — never hardcoded
+// Run setup.html once after downloading to configure your Supabase project
+const SUPABASE_URL  = localStorage.getItem('jt_sb_url')  || '';
+const SUPABASE_ANON = localStorage.getItem('jt_sb_anon') || '';
 
 // ── Supabase client (loaded via CDN in HTML) ─────────────────
 // Uses the global `supabase` object from @supabase/supabase-js
@@ -13,13 +15,16 @@ let _sb = null;
 
 function getSB() {
   if (!_sb) {
-    if (typeof window.supabase === 'undefined') {
-      console.warn('Supabase SDK not loaded — using localStorage only');
-      return null;
-    }
+    if (typeof window.supabase === 'undefined') return null;
+    if (!SUPABASE_URL || !SUPABASE_ANON || SUPABASE_URL === '') return null;
     _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   }
   return _sb;
+}
+
+// True if Supabase has been configured via setup.html
+function isSupabaseConfigured() {
+  return !!(localStorage.getItem('jt_sb_url') && localStorage.getItem('jt_sb_anon'));
 }
 
 // ── Current session ──────────────────────────────────────────

@@ -723,8 +723,13 @@ ${isQ ? `RULES: NEVER reveal the correct option. NEVER eliminate options. Find t
 
 const aiHistories = {};
 
+// AI endpoint: /api/ask on Vercel (serverless), localhost:3001 when running locally
+const AI_ENDPOINT = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:3001/ask'
+  : '/api/ask';
+
 async function callAI(messages) {
-  const resp = await fetch('http://localhost:3001/ask', {
+  const resp = await fetch(AI_ENDPOINT, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ model: AI_MODEL, max_tokens: 600, system: SYSTEM_PROMPT(), messages })
   });
@@ -787,11 +792,20 @@ function formatAIText(t) {
 async function checkProxy() {
   const btn = document.getElementById('ai-float-btn');
   try {
-    await fetch('http://localhost:3001/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    const resp = await fetch(AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: AI_MODEL, max_tokens: 1, system: 'ping', messages: [{ role: 'user', content: 'ping' }] }) });
-    if (btn) btn.style.background = 'var(--teal)';
+    // 500 = configured but bad key, still means endpoint is reachable
+    if (resp.status !== 404 && resp.status !== 0) {
+      if (btn) btn.style.background = 'var(--teal)';
+    }
   } catch(e) {
-    if (btn) { btn.style.background = '#854d0e'; const lbl = btn.querySelector('.ai-float-label'); if (lbl) lbl.textContent = 'Arjun (offline)'; }
+    // Only mark offline on network error (not on Vercel where /api/ask always exists)
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocal && btn) {
+      btn.style.background = '#854d0e';
+      const lbl = btn.querySelector('.ai-float-label');
+      if (lbl) lbl.textContent = 'Arjun (offline)';
+    }
   }
 }
 

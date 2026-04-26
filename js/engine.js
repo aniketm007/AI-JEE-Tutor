@@ -211,8 +211,13 @@ function addCont(feed, label = 'Got it →') {
   return new Promise(r => {
     const b = document.createElement('button');
     b.className = 'btn bp'; b.style.marginTop = '8px'; b.textContent = label;
-    b.onclick = () => { b.remove(); r(); };
+    b.onclick = () => {
+      b.remove();
+      try { feed.closest('#content').scrollTop += 9999; } catch(e) {}
+      setTimeout(r, 50);
+    };
     feed.appendChild(b);
+    try { feed.closest('#content').scrollTop += 9999; } catch(e) {}
   });
 }
 
@@ -653,7 +658,8 @@ function addAskArjunBtn(container, q, label) {
     const ctxMsgs = {
       hinglish: 'Theek hai! Maine yeh question dekh liya 👆 Kahan confusion hai — concept ya options mein?',
       hindi: 'ठीक है! मैंने यह प्रश्न देख लिया है 👆 कहाँ confusion है?',
-      english: 'Got it! I can see this question 👆 Where are you confused?'
+      english: 'Got it! I can see this question 👆 Where are you confused?',
+      telugu: 'సరే! ఈ ప్రశ్న చూశాను 👆 చెప్పు — ఏం అర్థం కాలేదు?'
     };
     setTimeout(() => addFloatBub(ctxMsgs[currentLang], 'bot'), 200);
   };
@@ -678,6 +684,11 @@ const LANG_CONFIG = {
     welcome: "Hey! I'm Arjun 👋 Ask me anything — I'm here to help!",
     placeholder: "Type your doubt here...",
     label: "English"
+  },
+  telugu: {
+    welcome: "హాయ్! నేను అర్జున్ 👋 Sets గురించి ఏదైనా అడుగు — నేను సహాయం చేస్తాను!",
+    placeholder: "ఏదైనా సందేహం అడుగు...",
+    label: "తెలుగు"
   }
 };
 let currentLang = 'hinglish';
@@ -690,7 +701,7 @@ function changeAILang(lang) {
   const msgs = document.getElementById('ai-float-msgs');
   if (msgs && msgs.children.length === 0) addFloatBub(LANG_CONFIG[lang].welcome, 'bot');
   else {
-    const m = { hinglish: "Theek hai, Hinglish mein baat karte hain! 😊", hindi: "ठीक है, हिंदी में! 😊", english: "Sure, English it is! 😊" };
+    const m = { hinglish: "Theek hai, Hinglish mein baat karte hain! 😊", hindi: "ठीक है, हिंदी में! 😊", english: "Sure, English it is! 😊", telugu: "సరే, తెలుగులో మాట్లాడదాం! 😊" };
     addFloatBub(m[lang], 'bot');
   }
 }
@@ -711,7 +722,8 @@ const SYSTEM_PROMPT = () => {
   const langMap = {
     hinglish: `Mix Hindi and English naturally. "Dekho yaar, yahan F=ma apply hoga". Celebrate: "Bilkul sahi!", "Haan exactly yaar!"`,
     hindi: `Pure Hindi, warm. "देखो, यहाँ F=ma लागू होगा". Celebrate: "बिल्कुल सही!"`,
-    english: `Clear, friendly English. Celebrate: "Exactly right!", "Great thinking!"`
+    english: `Clear, friendly English. Celebrate: "Exactly right!", "Great thinking!"`,
+    telugu: `Pure Telugu script only. Math terms in English. Celebrate: "చాలా సరిగ్గా!", "అవును సరే!"`
   };
   return `You are Arjun, a friendly JEE tutor specialising in ${chapterName}.
 CONTEXT: Topic: ${aiCtx.name} | Mode: ${isQ ? 'student attempting question' : 'studying concept'}
@@ -737,6 +749,16 @@ async function callAI(messages) {
   const data = await resp.json();
   return data.content?.filter(b => b.type === 'text').map(b => b.text).join('') || '';
 }
+
+function toggleAIFloat() {
+  const panel = document.getElementById('ai-float-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    document.getElementById('ai-float-inp').focus();
+    if (!welcomeShown) { welcomeShown = true; addFloatBub(LANG_CONFIG[currentLang].welcome, 'bot'); }
+  }
+}
+
 
 function toggleAIFloat() {
   const panel = document.getElementById('ai-float-panel');
@@ -792,20 +814,11 @@ function formatAIText(t) {
 async function checkProxy() {
   const btn = document.getElementById('ai-float-btn');
   try {
-    const resp = await fetch(AI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    await fetch('http://localhost:3001/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: AI_MODEL, max_tokens: 1, system: 'ping', messages: [{ role: 'user', content: 'ping' }] }) });
-    // 500 = configured but bad key, still means endpoint is reachable
-    if (resp.status !== 404 && resp.status !== 0) {
-      if (btn) btn.style.background = 'var(--teal)';
-    }
+    if (btn) btn.style.background = 'var(--teal)';
   } catch(e) {
-    // Only mark offline on network error (not on Vercel where /api/ask always exists)
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    if (isLocal && btn) {
-      btn.style.background = '#854d0e';
-      const lbl = btn.querySelector('.ai-float-label');
-      if (lbl) lbl.textContent = 'Arjun (offline)';
-    }
+    if (btn) { btn.style.background = '#854d0e'; const lbl = btn.querySelector('.ai-float-label'); if (lbl) lbl.textContent = 'Arjun (offline)'; }
   }
 }
 

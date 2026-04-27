@@ -201,7 +201,8 @@ function addBub(feed, html, type = 'ai', ms = 350) {
       if (labels[type]) b.innerHTML = `<div class="lbl">${labels[type]}</div>${html}`;
       else b.innerHTML = html;
       feed.appendChild(b);
-      feed.closest('#content').scrollTop += 9999;
+      // Scroll only the new bubble into view — never jump past it to questions below
+      b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       r(b);
     }, ms);
   });
@@ -211,13 +212,10 @@ function addCont(feed, label = 'Got it →') {
   return new Promise(r => {
     const b = document.createElement('button');
     b.className = 'btn bp'; b.style.marginTop = '8px'; b.textContent = label;
-    b.onclick = () => {
-      b.remove();
-      try { feed.closest('#content').scrollTop += 9999; } catch(e) {}
-      setTimeout(r, 50);
-    };
+    b.onclick = () => { b.remove(); setTimeout(r, 50); };
     feed.appendChild(b);
-    try { feed.closest('#content').scrollTop += 9999; } catch(e) {}
+    // Scroll button into view so student can see and click it
+    b.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 }
 
@@ -388,7 +386,13 @@ function buildQActions(q, concept, idx, total, ok) {
       updateDots(concept, idx + 1);
       setTimeout(() => {
         const nc = document.getElementById('qcard-' + nextQ.id);
-        if (nc) nc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (nc) {
+          // Scroll to TOP of content so student sees question header first
+          const contentEl = document.getElementById('content');
+          let top = 0, el = nc;
+          while (el && el !== contentEl) { top += el.offsetTop; el = el.offsetParent; }
+          contentEl.scrollTo({ top: Math.max(0, top - 80), behavior: 'smooth' });
+        }
       }, 100);
     };
     acts.appendChild(nb);

@@ -15,7 +15,7 @@ function addMsg(feed,html,type='ai',delay=0){
       if(labels[type]) b.innerHTML=`<div class="lbl">${labels[type]}</div>${html}`;
       else b.innerHTML=html;
       feed.appendChild(b);
-      feed.parentElement.scrollTop=feed.parentElement.scrollHeight;
+      b.scrollIntoView({behavior:'smooth',block:'nearest'});
       r();
     },delay);
   });
@@ -23,7 +23,7 @@ function addMsg(feed,html,type='ai',delay=0){
 
 function addGame(feed,el){
   feed.appendChild(el);
-  feed.parentElement.scrollTop=feed.parentElement.scrollHeight;
+  b.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function cont(feed,label='Got it →'){

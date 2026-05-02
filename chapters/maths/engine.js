@@ -184,7 +184,7 @@ function addBub(feed, html, type = 'ai', ms = 350) {
       if (labels[type]) b.innerHTML = `<div class="lbl">${labels[type]}</div>${html}`;
       else b.innerHTML = html;
       feed.appendChild(b);
-      feed.closest('#content').scrollTop += 9999;
+      b.scrollIntoView({behavior:'smooth',block:'nearest'});
       r(b);
     }, ms);
   });
@@ -197,14 +197,13 @@ function addCont(feed, label = 'Got it →') {
     b.onclick = () => {
       b.remove();
       // Scroll content to keep feed in view after button removed
-      const ct = feed.closest('#content');
-      if (ct) ct.scrollTop = feed.offsetTop + feed.scrollHeight - ct.clientHeight + 40;
+      b.scrollIntoView({behavior:'smooth',block:'nearest'});
       r();
     };
     feed.appendChild(b);
     // Scroll button into view
     const ct = feed.closest('#content');
-    if (ct) ct.scrollTop += 9999;
+    if (ct) ct.scrollIntoView({behavior:'smooth',block:'nearest'});
   });
 }
 
@@ -929,4 +928,9 @@ function buildPanels() {
     </div>
     <div id="qb-content"></div>`;
   document.getElementById('sec-str').innerHTML = `<div id="str-content"></div>`;
+}
+
+function addGame(feed,el){
+  feed.appendChild(el);
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }

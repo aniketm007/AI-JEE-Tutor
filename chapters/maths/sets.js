@@ -23,7 +23,7 @@ function addMsg(feed,html,type='ai',delay=0){
 
 function addGame(feed,el){
   feed.appendChild(el);
-  b.scrollIntoView({behavior:'smooth',block:'nearest'});
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function cont(feed,label='Got it →'){

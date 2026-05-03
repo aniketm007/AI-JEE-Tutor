@@ -442,5 +442,34 @@ function doSearch(q){
   });
 }
 </script>
+
+<!-- Supabase + Auth -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// Auth guard — redirect to login if not signed in
+authInit().then(() => {
+  if (!isLoggedIn()) {
+    window.location.href = 'login.html';
+    return;
+  }
+  // Render user avatar in topbar
+  renderAuthWidget('auth-widget-idx');
+
+  // Load Supabase progress for progress bars
+  fetchAllProgress().then(all => {
+    if (all['phy-newtons-laws']) {
+      const p = Math.min(100, Math.round(Object.keys(all['phy-newtons-laws'].qbProg||{}).length/41*100));
+      const el = document.getElementById('cpn'); if(el) el.style.width=p+'%';
+      const sb = document.getElementById('sbpn'); if(sb) sb.style.width=p+'%';
+    }
+    if (all['maths-sets']) {
+      const p = Math.min(100, Math.round(Object.keys(all['maths-sets'].qbProg||{}).length/30*100));
+      const el = document.getElementById('cps'); if(el) el.style.width=p+'%';
+      const sb = document.getElementById('sbps'); if(sb) sb.style.width=p+'%';
+    }
+  }).catch(()=>{});
+});
+</script>
 </body>
 </html>

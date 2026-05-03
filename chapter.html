@@ -24,13 +24,15 @@
 
 <div id="main">
   <div id="topbar">
-    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:7px;background:var(--surface2);border:1px solid var(--border2);color:var(--muted);font-size:12px;font-weight:600;text-decoration:none;flex-shrink:0;transition:all .15s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'" title="All Chapters">
-      ← All Chapters
-    </a>
-    <div class="tb-t" id="tbT" style="margin-left:8px;">Loading...</div>
+    <div class="tb-t" id="tbT">Loading...</div>
     <div class="ptk"><div class="pf" id="pf"></div></div>
     <div class="tb-p" id="tbP">0%</div>
-    <div id="auth-widget" style="position:relative;margin-left:8px;"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:8px;flex-shrink:0;">
+      <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:7px;background:var(--surface2);border:1px solid var(--border2);color:var(--muted);font-size:12px;font-weight:600;text-decoration:none;transition:all .15s;white-space:nowrap;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'" title="Main Menu">
+        ☰ Main Menu
+      </a>
+      <div id="auth-widget" style="position:relative;"></div>
+    </div>
   </div>
   <div id="content">
     <!-- Panels built dynamically by engine.js buildPanels() -->
@@ -76,23 +78,29 @@
 <!-- Shared engine -->
 <script src="../js/engine.js"></script>
 
-<!-- Chapter data file (set by each chapter's HTML or URL param) -->
-<!-- Loaded dynamically below -->
 <script>
-  // Determine which chapter to load from URL param: ?chapter=physics/newtons-laws
-  const params = new URLSearchParams(window.location.search);
-  const chapterId = params.get('chapter') || 'physics/newtons-laws';
+  // ── AUTH GUARD: redirect to login if not signed in ─────────
+  authInit().then(() => {
+    if (!isLoggedIn()) {
+      window.location.href = '../login.html?from=' + encodeURIComponent(window.location.href);
+      return;
+    }
 
-  const script = document.createElement('script');
-  script.src = '../chapters/' + chapterId + '.js';
-  script.onload = () => {
-    document.title = (CHAPTER ? CHAPTER.title + ' — ' : '') + 'JEE Tutor';
-    initPlatform();
-  };
-  script.onerror = () => {
-    document.getElementById('tbT').textContent = 'Chapter not found: ' + chapterId;
-  };
-  document.body.appendChild(script);
+    // ── LOAD CHAPTER ─────────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    const chapterId = params.get('chapter') || 'physics/newtons-laws';
+
+    const script = document.createElement('script');
+    script.src = '../chapters/' + chapterId + '.js';
+    script.onload = () => {
+      document.title = (CHAPTER ? CHAPTER.title + ' — ' : '') + 'JEE Tutor';
+      initPlatform();
+    };
+    script.onerror = () => {
+      document.getElementById('tbT').textContent = 'Chapter not found: ' + chapterId;
+    };
+    document.body.appendChild(script);
+  });
 </script>
 </body>
 </html>

@@ -4,10 +4,9 @@
 // from https://supabase.com → Project Settings → API
 // ═══════════════════════════════════════════════════════════
 
-// Keys are stored in localStorage by setup.html — never hardcoded
-// Run setup.html once after downloading to configure your Supabase project
-const SUPABASE_URL  = localStorage.getItem('jt_sb_url')  || '';
-const SUPABASE_ANON = localStorage.getItem('jt_sb_anon') || '';
+// Keys hardcoded — students never need to configure anything
+const SUPABASE_URL  = 'https://gnznooqdxrrpypcqtoeh.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imduem5vb3FkeHJycHlwY3F0b2VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5NDI1NzYsImV4cCI6MjA5MjUxODU3Nn0.5MacFIBKPTZuhmNO7HN6tIiZXlPnjJKoi8E_gJXzLjw';
 
 // ── Supabase client (loaded via CDN in HTML) ─────────────────
 // Uses the global `supabase` object from @supabase/supabase-js
@@ -16,7 +15,6 @@ let _sb = null;
 function getSB() {
   if (!_sb) {
     if (typeof window.supabase === 'undefined') return null;
-    if (!SUPABASE_URL || !SUPABASE_ANON || SUPABASE_URL === '') return null;
     _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   }
   return _sb;
